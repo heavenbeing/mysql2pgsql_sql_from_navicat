@@ -81,6 +81,7 @@ def parse(input_filename, output_filename):
         if current_table is None:
             # Start of a table creation statement?
             if line.startswith("CREATE TABLE"):
+                line = line.replace("`", '"') + ""
                 current_table = line.split('"')[1]
                 current_table = 'public"."'+current_table
                 tables[current_table] = {"columns": []}
@@ -89,7 +90,7 @@ def parse(input_filename, output_filename):
                 name_lines = []
             # Inserting data into a table?
             elif line.startswith("INSERT INTO"):
-                line = line.replace("`", '"') + "\n"
+                line = line.replace("`", '"') + ""
                 output.write(line.encode("utf8").replace("'0000-00-00 00:00:00'", "NULL") + "\n")
                 num_inserts += 1
             # ???
@@ -98,6 +99,7 @@ def parse(input_filename, output_filename):
 
         # Inside-create-statement handling
         else:
+            line = line.replace("`", '"') + ""
             # Is it a column?
             if line.startswith('"'):
                 useless, name, definition = line.strip(",").split('"',2)
@@ -305,4 +307,4 @@ def parse(input_filename, output_filename):
 
 
 if __name__ == "__main__":
-    parse("rcms.sql", "tts.sql")
+    parse("input.sql", "output.sql")
